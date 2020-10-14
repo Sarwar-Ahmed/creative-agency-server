@@ -90,6 +90,13 @@ client.connect(err => {
                 res.send(result.insertedCount);
             })
     })
+
+    app.get('/orders', (req, res) => {
+        userOrderCollection.find({})
+            .toArray((err, documents) => {
+                res.send(documents);
+            })
+        })
 });
 
 
