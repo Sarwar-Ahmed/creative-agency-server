@@ -105,22 +105,22 @@ client.connect(err => {
     })
 
     app.post('/addOrder', (req, res) => {
-        const image = req.files.image;
+        const file = req.files.file;
         const name = req.body.name;
         const email = req.body.email;
         const project = req.body.project;
         const details = req.body.details;
         const price = req.body.price;
         const status = req.body.status;
-            const newImg = image.data;
+            const newImg = file.data;
             const encImg = newImg.toString('base64');
 
-            const images = {
-                contentType: image.mimetype,
-                size: image.size,
+            const image= {
+                contentType: file.mimetype,
+                size: file.size,
                 img: Buffer.from(encImg, 'base64')
             };
-            userOrderCollection.insertOne({name, email, project, details, price, status, images})
+            userOrderCollection.insertOne({name, email, project, details, price, status, image})
             .then(result => {
                     res.send(result.insertedCount > 0);
             })
@@ -128,19 +128,19 @@ client.connect(err => {
     })
 
     app.post('/addService', (req, res) => {
-        const image = req.files.image;
+        const file = req.files.file;
         const title = req.body.title;
         const description = req.body.description;
         
-            const newImg = image.data;
+            const newImg = file.data;
             const encImg = newImg.toString('base64');
 
-            const images = {
-                contentType: image.mimetype,
-                size: image.size,
+            const image = {
+                contentType: file.mimetype,
+                size: file.size,
                 img: Buffer.from(encImg, 'base64')
             };
-            servicesCollection.insertOne({title, description, images})
+            servicesCollection.insertOne({title, description, image})
             .then(result => {
                 res.send(result.insertedCount > 0);
             })
