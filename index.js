@@ -112,12 +112,12 @@ client.connect(err => {
         const details = req.body.details;
         const price = req.body.price;
         const status = req.body.status;
-            const newImg = req.files.image.data;
+            const newImg = image.data;
             const encImg = newImg.toString('base64');
 
             const images = {
-                contentType: req.files.image.mimetype,
-                size: req.files.image.size,
+                contentType: image.mimetype,
+                size: image.size,
                 img: Buffer.from(encImg, 'base64')
             };
             userOrderCollection.insertOne({name, email, project, details, price, status, images})
@@ -132,12 +132,12 @@ client.connect(err => {
         const title = req.body.title;
         const description = req.body.description;
         
-            const newImg = req.files.image.data;
+            const newImg = image.data;
             const encImg = newImg.toString('base64');
 
             const images = {
-                contentType: req.files.image.mimetype,
-                size: req.files.image.size,
+                contentType: image.mimetype,
+                size: image.size,
                 img: Buffer.from(encImg, 'base64')
             };
             servicesCollection.insertOne({title, description, images})
