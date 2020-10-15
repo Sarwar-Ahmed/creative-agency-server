@@ -20,6 +20,7 @@ app.use(fileUpload());
 const admin = require('firebase-admin');
 
 const serviceAccount = require("./config/creative-agency-by-sarwar-firebase-adminsdk-offfh-05edaf557d.json");
+const { ObjectId } = require('mongodb');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -111,31 +112,18 @@ client.connect(err => {
         const details = req.body.details;
         const price = req.body.price;
         const status = req.body.status;
-        const filePath = `${__dirname}/order/${image.name}`;
-        image.mv(filePath, err => {
-            if(err){
-                console.log(err);
-                res.status(500).send({msg: 'Failed to upload Image'});
-            }
-            const newImg = fs.readFileSync(filePath);
+            const newImg = req.files.image.data;
             const encImg = newImg.toString('base64');
 
-            const image = {
+            const images = {
                 contentType: req.files.image.mimetype,
                 size: req.files.image.size,
                 img: Buffer.from(encImg, 'base64')
             };
-            userOrderCollection.insertOne({name, email, project, details, price, status, image})
+            userOrderCollection.insertOne({name, email, project, details, price, status, images})
             .then(result => {
-                fs.remove(filePath, error => {
-                    if(error) {
-                        console.log(error);
-                        res.status(500).send({msg: 'Failed to upload Image'});
-                    }
                     res.send(result.insertedCount > 0);
-                })
             })
-        })
         
     })
 
@@ -143,31 +131,19 @@ client.connect(err => {
         const image = req.files.image;
         const title = req.body.title;
         const description = req.body.description;
-        const filePath = `${__dirname}/service/${image.name}`;
-        image.mv(filePath, err => {
-            if(err){
-                console.log(err);
-                res.status(500).send({msg: 'Failed to upload Image'});
-            }
-            const newImg = fs.readFileSync(filePath);
+        
+            const newImg = req.files.image.data;
             const encImg = newImg.toString('base64');
 
-            const image = {
+            const images = {
                 contentType: req.files.image.mimetype,
                 size: req.files.image.size,
                 img: Buffer.from(encImg, 'base64')
             };
-            servicesCollection.insertOne({title, description, image})
+            servicesCollection.insertOne({title, description, images})
             .then(result => {
-                fs.remove(filePath, error => {
-                    if(error) {
-                        console.log(error);
-                        res.status(500).send({msg: 'Failed to upload Image'});
-                    }
-                    res.send(result.insertedCount > 0);
-                })
+                res.send(result.insertedCount > 0);
             })
-        })
         
     })
 
@@ -184,6 +160,16 @@ client.connect(err => {
                 res.send(documents);
             })
         })
+
+    app.patch(`/updateOrders`, (req, res) => {
+        userOrderCollection.updateOne({_id: ObjectId(req.body.id)},
+        {
+            $set: {status: req.body.status}
+        })
+        .then (result => {
+            console.log(result);
+        })
+    })
 });
 
 
